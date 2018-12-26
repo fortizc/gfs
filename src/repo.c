@@ -33,7 +33,7 @@ void repo_set_error(repo *rp)
 
 int repo_credentials_cb(git_cred **out,
                         const char *url,
-                        const char *username_from_url,
+                        const char *username,
                         unsigned allowed_types,
                         void *payload)
 {
@@ -62,11 +62,8 @@ int repo_credentials_cb(git_cred **out,
     memcpy(&(priv_key[pw_dir_sz]), PRIVATE_KEY_PATH, priv_key_path_sz);
     priv_key[priv_key_sz - 1] = 0;
 
-    char *passphrase = (char *)payload;
-
-    if (!passphrase)
-        return git_cred_ssh_key_new(out, username_from_url, pub_key, priv_key, "");
-    return git_cred_ssh_key_new(out, username_from_url, pub_key, priv_key, passphrase);
+    char *passphrase = payload ? (char *) payload : "";
+    return git_cred_ssh_key_new(out, username, pub_key, priv_key, passphrase);
 }
 
 // public API
